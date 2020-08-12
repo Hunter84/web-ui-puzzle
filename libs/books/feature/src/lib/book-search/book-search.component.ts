@@ -9,6 +9,7 @@ import {
 } from '@tmo/books/data-access';
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'tmo-book-search',
@@ -25,7 +26,12 @@ export class BookSearchComponent implements OnInit {
   constructor(
     private readonly store: Store,
     private readonly fb: FormBuilder
-  ) {}
+  ) {
+    this.searchForm.get('term').valueChanges.pipe(debounceTime(500)).subscribe(x => {
+      this.searchBooks();
+    })
+
+  }
 
   get searchTerm(): string {
     return this.searchForm.value.term;
