@@ -7,6 +7,7 @@
     "nx": "nx",
     "start": "nx serve okreads",
     "build": "nx build",
+    "build:frontend": "nx build okreads-browser --prod",
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint",
     "e2e": "nx e2e okreads-e2e",
