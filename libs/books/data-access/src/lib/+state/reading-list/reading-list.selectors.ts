@@ -7,7 +7,7 @@ import {
   ReadingListPartialState,
   State
 } from './reading-list.reducer';
-import { Book, ReadingListItem } from '@tmo/shared/models';
+import { Book, ReadingListItem, LastUpdatedBook } from '@tmo/shared/models';
 
 export const getReadingListState = createFeatureSelector<
   ReadingListPartialState,
@@ -38,6 +38,14 @@ export const getAllBooks = createSelector<
   return books.map(b => ({ ...b, isAdded: Boolean(entities[b.id]) }));
 });
 
-export const getReadingList = createSelector(getReadingListState, selectAll);
+const readingList = createSelector(getReadingListState, selectAll);
+
+export const getReadingList = createSelector(readingList, getReadingListState, (list, state) => {
+  return list.map(b => ({ ...b, isAdded: Boolean(state.lastUpdated && state.lastUpdated.id === b['id']) }));
+});
+
+export const getLastUpdatedBook = createSelector(getReadingListState, (state) => {
+  return state.lastUpdated;
+});
 
 export const getTotalUnread = createSelector(getReadingListState, selectTotal);
