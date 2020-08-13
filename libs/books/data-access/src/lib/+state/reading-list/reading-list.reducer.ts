@@ -2,11 +2,12 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 
 import * as ReadingListActions from './reading-list.actions';
-import { ReadingListItem } from '@tmo/shared/models';
+import { ReadingListItem, LastUpdatedBook } from '@tmo/shared/models';
 
 export const READING_LIST_FEATURE_KEY = 'readingList';
 
 export interface State extends EntityState<ReadingListItem> {
+  lastUpdated: null | LastUpdatedBook;
   loaded: boolean;
   error: null | string;
 }
@@ -22,6 +23,7 @@ export const readingListAdapter: EntityAdapter<ReadingListItem> = createEntityAd
 });
 
 export const initialState: State = readingListAdapter.getInitialState({
+  lastUpdated: null,
   loaded: false,
   error: null
 });
@@ -50,12 +52,32 @@ const readingListReducer = createReducer(
   on(ReadingListActions.addToReadingList, (state, action) =>
     readingListAdapter.addOne({ bookId: action.book.id, ...action.book }, state)
   ),
+  on(ReadingListActions.confirmedAddToReadingList, (state, action) => {
+    return {
+      ...state,
+      lastUpdated: {
+        ...action.book,
+        status: 'added',
+        time: Date.now()
+      }
+    }
+  }),
   on(ReadingListActions.failedAddToReadingList, (state, action) =>
     readingListAdapter.removeOne(action.book.id, state)
   ),
   on(ReadingListActions.removeFromReadingList, (state, action) =>
     readingListAdapter.removeOne(action.item.bookId, state)
   ),
+  on(ReadingListActions.confirmedRemoveFromReadingList, (state, action) => {
+    return {
+      ...state,
+      lastUpdated: {
+        ...action.item,
+        status: 'removed',
+        time: Date.now()
+      }
+    }
+  }),
   on(ReadingListActions.failedRemoveFromReadingList, (state, action) =>
     readingListAdapter.addOne(action.item, state)
   )
