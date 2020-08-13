@@ -12,6 +12,17 @@
     <div>
       <button
         mat-icon-button
+        color="{{b?.finished ? 'accent': 'link'}}"
+        data-testing="mark-as-read"
+        [attr.aria-label]="'Mark ' + b.title + ' as read on the reading list'"
+        (click)="markAsRead(b)"
+      >
+        <mat-icon>assignment_turned_in</mat-icon>
+      </button>
+    </div>
+    <div>
+      <button
+        mat-icon-button
         color="warn"
         [attr.aria-label]="'Remove ' + b.title + ' from reading list'"
         (click)="removeFromReadingList(b)"
